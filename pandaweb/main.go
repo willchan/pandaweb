@@ -57,10 +57,12 @@ func main() {
 		},
 	}
 
-	if err := srv.ListenAndServeTLS("", ""); err != nil {
-		fmt.Println("Failed to listen and serve:", err)
-		os.Exit(1)
-	}
+	go func() {
+		if err := srv.ListenAndServeTLS("", ""); err != nil {
+			fmt.Println("Failed to listen and serve:", err)
+			os.Exit(1)
+		}
+	}()
 
 	fmt.Printf("pandaweb is running on port %d...\n", *port)
 
