@@ -11,6 +11,7 @@ import (
 	"path"
 	"syscall"
 
+	"github.com/gorilla/handlers"
 	"github.com/willchan/pandaweb"
 )
 
@@ -47,7 +48,7 @@ func main() {
 		return cm.GetCertificate(clientHello)
 	}
 
-	http.Handle("/", http.FileServer(http.Dir(webRootPath)))
+	http.Handle("/", handlers.LoggingHandler(os.Stdout, http.FileServer(http.Dir(webRootPath))))
 
 	srv := &http.Server{
 		Addr: fmt.Sprintf(":%d", *port),

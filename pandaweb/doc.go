@@ -7,4 +7,4 @@ a specified webroot.
 
 */
 
-package main // import "golang.org/x/tools/cmd/goimports"
+package main // import "github.com/willchan/pandaweb/pandaweb"
