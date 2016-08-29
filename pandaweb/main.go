@@ -45,6 +45,17 @@ func redirectHttpHttps(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, u.String(), http.StatusMovedPermanently)
 }
 
+func secureHeadersHandler(h http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Set secure headers
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-XSS-Protection", "1; mode=block")
+		// Serve with the actual handler.
+		h.ServeHTTP(w, r)
+	}
+}
+
 func main() {
 	flag.Parse()
 
@@ -75,7 +86,7 @@ func main() {
 	}
 
 	// Start up the HTTPS server.
-	http.Handle("/", handlers.LoggingHandler(os.Stdout, http.FileServer(http.Dir(*webRoot))))
+	http.Handle("/", secureHeadersHandler(handlers.LoggingHandler(os.Stdout, http.FileServer(http.Dir(*webRoot)))))
 	srv := &http.Server{
 		Addr: fmt.Sprintf(":%d", *httpsPort),
 		TLSConfig: &tls.Config{
